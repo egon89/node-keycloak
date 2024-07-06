@@ -24,7 +24,9 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "jimp": "^0.22.12",
     "jsonwebtoken": "^9.0.2",
+    "jsqr": "^1.4.0",
     "qrcode": "^1.5.3",
     "tsx": "^4.16.2"
   }

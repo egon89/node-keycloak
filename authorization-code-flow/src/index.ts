@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import QRCode from 'qrcode';
+import { decodeQR } from './qrcode-reader';
 
 const realm = 'poc';
 const clientId = 'poc';
@@ -50,14 +51,14 @@ app.get('/callback', async (req, res) => {
   console.log(result);
 
   res.json(result);
- });
+});
 
- app.post('/create-qr-code', async (req, res) => {
+app.post('/create-qr-code', async (req, res) => {
   const bearerToken = req.headers.authorization;
   const token = bearerToken?.split(' ')[1] ?? 'no-token';
   // const qrCode = await QRCode.toString(token, { type: 'terminal', small: true });
   const qrCode = await QRCode.toDataURL(token);
-  
+
   try {
     await QRCode.toFile('./output/qr-code.png', token);
     console.log('QR code saved to ./output/qr-code.png');
@@ -66,8 +67,15 @@ app.get('/callback', async (req, res) => {
   }
 
   res.json({ qrCode });
- });
+});
 
+app.get('/qr-code', async (req, res) => {
+  const qrCodeContent = await decodeQR('./output/qr-code.png')
+
+  console.log('QR code content:', qrCodeContent);
+
+  res.send(qrCodeContent);
+});
 
 app.listen(3000, () => {
   console.log('Listening on port 3000');
