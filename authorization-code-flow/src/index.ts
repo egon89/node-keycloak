@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+import QRCode from 'qrcode';
 
 const realm = 'poc';
 const clientId = 'poc';
@@ -6,6 +8,7 @@ const appHost = 'localhost:3000';
 const keycloakHost = 'localhost:8080';
 const keycloakDockerHost = 'keycloak:8080';
 const app = express();
+app.use(cors());
 
 app.get('/login', (req, res) => {
   const loginParams = new URLSearchParams({
@@ -47,6 +50,22 @@ app.get('/callback', async (req, res) => {
   console.log(result);
 
   res.json(result);
+ });
+
+ app.post('/create-qr-code', async (req, res) => {
+  const bearerToken = req.headers.authorization;
+  const token = bearerToken?.split(' ')[1] ?? 'no-token';
+  // const qrCode = await QRCode.toString(token, { type: 'terminal', small: true });
+  const qrCode = await QRCode.toDataURL(token);
+  
+  try {
+    await QRCode.toFile('./output/qr-code.png', token);
+    console.log('QR code saved to ./output/qr-code.png');
+  } catch (err) {
+    console.error('Error generating QR code: ', err);
+  }
+
+  res.json({ qrCode });
  });
 
 
