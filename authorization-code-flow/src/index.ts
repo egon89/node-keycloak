@@ -6,9 +6,8 @@ import axios from 'axios';
 
 const realm = 'poc';
 const clientId = 'poc';
-const appHost = 'localhost:3000';
-const keycloakHost = 'localhost:8080';
-const keycloakDockerHost = 'keycloak:8080';
+const appHost = 'host.docker.internal:3000';
+const keycloakHost = 'host.docker.internal:8080';
 const app = express();
 app.use(cors());
 
@@ -39,7 +38,7 @@ app.get('/callback', async (req, res) => {
     redirect_uri: `http://${appHost}/callback`,
   });
 
-  const url = `http://${keycloakDockerHost}/realms/${realm}/protocol/openid-connect/token`;
+  const url = `http://${keycloakHost}/realms/${realm}/protocol/openid-connect/token`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -96,7 +95,7 @@ app.get('/pre-action', async (req, res) => {
     client_secret: '5y4VqRkFE1P6qXd7oiGw46eDOG5KhtOV',
   });
 
-  const url = `http://${keycloakDockerHost}/realms/${realm}/protocol/openid-connect/token/introspect`;
+  const url = `http://${keycloakHost}/realms/${realm}/protocol/openid-connect/token/introspect`;
   const response = await axios.post(url, bodyParams, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -109,7 +108,7 @@ app.get('/pre-action', async (req, res) => {
 });
 
 app.post('/introspect', async (req, res) => {
-  const token = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUbjFIam80cjNLNTRrdkhHRHV6NmxTMUs2eVIwNG5yZnlfNWlUNTVWanpVIn0.eyJleHAiOjE3MjAzMTk5NTUsImlhdCI6MTcyMDMxOTY1NSwiYXV0aF90aW1lIjoxNzIwMzE4NDk3LCJqdGkiOiJkYzZmZDdmMy1lMTZiLTQwMjktYThjOC0wYjI3MTJiNjk3Y2QiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3BvYyIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzZjVjMmExOS1lZjFiLTQ2NmEtYWJlNC0zMzJhYzI3MjY0MjAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwb2MiLCJzZXNzaW9uX3N0YXRlIjoiNzdkMzNhYjYtMmU3Ni00MGYwLWJjN2UtZGUyNjg3ZmVjNWU5IiwiYWNyIjoiMCIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXBvYyIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIjoiNzdkMzNhYjYtMmU3Ni00MGYwLWJjN2UtZGUyNjg3ZmVjNWU5IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoidXNlcjEgZG9lIiwicHJlZmVycmVkX3VzZXJuYW1lIjoidXNlcjEiLCJnaXZlbl9uYW1lIjoidXNlcjEiLCJmYW1pbHlfbmFtZSI6ImRvZSIsImVtYWlsIjoidXNlcjFAZ21haWwuY29tIn0.AzmblX7ioQstbai5Pz_O_md77nSBJ3XHEtOPTUDNQ3aEwXL3uX8gYMbX232T-WMOtMnahNvP0i1uF9r6sGu7XSb3lHmgQXK4KeibD5G60NH6D72JYhwJHgfbz8a-l9ik3q_uRGFfI10WDzHbVsCe3DLoC5PL2Oc8G9W544PzeTMXAtchCXXCrk4sjTSFA0foGLhe8I8AS_aLzZDM-GiQOnLHiqYKZNZ-0l7x-eqeOEXBlNNCo6msTXYb259XxIqpT7X6OtfGXsHIfrwkdE3mchYdvLBMGFwmQT-W3Mu1tcoWjIpQctf2ry7m6vRyc0PwyxJlYZ7vxhxz0JAX8tzIZg';
+  const token = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJUbjFIam80cjNLNTRrdkhHRHV6NmxTMUs2eVIwNG5yZnlfNWlUNTVWanpVIn0.eyJleHAiOjE3MjAzMjkzOTgsImlhdCI6MTcyMDMyOTA5OCwiYXV0aF90aW1lIjoxNzIwMzI5MDk4LCJqdGkiOiJlYWY2N2Q4NC02NWM5LTQ1NmItODExNC1lZjI5NDFkNGZmYmIiLCJpc3MiOiJodHRwOi8vaG9zdC5kb2NrZXIuaW50ZXJuYWw6ODA4MC9yZWFsbXMvcG9jIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjNmNWMyYTE5LWVmMWItNDY2YS1hYmU0LTMzMmFjMjcyNjQyMCIsInR5cCI6IkJlYXJlciIsImF6cCI6InBvYyIsInNlc3Npb25fc3RhdGUiOiI1ZmJjYzgzZC0wYzM4LTQ3ODAtYmIxNS01MjRkZGE0NzY3ODkiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcG9jIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiI1ZmJjYzgzZC0wYzM4LTQ3ODAtYmIxNS01MjRkZGE0NzY3ODkiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJ1c2VyMSBkb2UiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyMSIsImdpdmVuX25hbWUiOiJ1c2VyMSIsImZhbWlseV9uYW1lIjoiZG9lIiwiZW1haWwiOiJ1c2VyMUBnbWFpbC5jb20ifQ.SMbTzcGnvK4WQKGd1V-iUcU57fUG7eH7tXzPvMNhUTVnN1wrOQCZekOg6SdHs6ZKjICPJqV3h5djYJHenGjRd6aCY937poLqCUlwIgvGmAmbxkNEcMCHKtQy-8W2qBmN4QHZjFrsUyoFMtbNl8tprQ_FpIXjvLRJdbHxmtXy7qe9TqFSedwaK22WpEcSqPW4hXV9CHeFxBP4n_4dY8wtJVcDDZ5Et3YRKeYVd7t48ZqB4LHf7WOvQ0oeHsDgtp_gvjt_NJ24pJiUAiqRlNGMNhjaM5sMi1S0VSwREzeMaRkT02GtFxs8i6LRo-zg57g58svglfFBlgISExLXfYF0bg';
   console.log(`Introspect token: ${token?.substring(0, 100)}...`);
 
   const bodyParams = new URLSearchParams({
@@ -118,7 +117,7 @@ app.post('/introspect', async (req, res) => {
     client_secret: '5y4VqRkFE1P6qXd7oiGw46eDOG5KhtOV',
   });
 
-  const url = `http://${keycloakDockerHost}/realms/poc/protocol/openid-connect/token/introspect`;
+  const url = `http://${keycloakHost}/realms/poc/protocol/openid-connect/token/introspect`;
   const response = await axios.post(url, bodyParams, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

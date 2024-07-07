@@ -7,11 +7,5 @@ services:
       - 3000:3000
     volumes:
       - .:/home/node/app
-    networks:
-      - external-network
-
-    
-networks:
-  external-network:
-    external:
-      name: external_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
