@@ -3,9 +3,12 @@ import cors from 'cors';
 import QRCode from 'qrcode';
 import { decodeQR } from './qrcode-reader';
 import axios from 'axios';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 const realm = 'poc';
 const clientId = 'poc';
+const clientSecret = process.env.CLIENT_SECRET ?? 'invalid-secret';
 const appHost = 'host.docker.internal:3000';
 const keycloakHost = 'host.docker.internal:8080';
 const app = express();
@@ -32,7 +35,7 @@ app.get('/callback', async (req, res) => {
 
   const bodyParams = new URLSearchParams({
     client_id: clientId,
-    client_secret: '5y4VqRkFE1P6qXd7oiGw46eDOG5KhtOV',
+    client_secret: clientSecret,
     grant_type: 'authorization_code',
     code: req.query.code as string,
     redirect_uri: `http://${appHost}/callback`,
@@ -114,7 +117,7 @@ app.post('/introspect', async (req, res) => {
   const bodyParams = new URLSearchParams({
     token,
     client_id: clientId,
-    client_secret: '5y4VqRkFE1P6qXd7oiGw46eDOG5KhtOV',
+    client_secret: clientSecret,
   });
 
   const url = `http://${keycloakHost}/realms/poc/protocol/openid-connect/token/introspect`;
