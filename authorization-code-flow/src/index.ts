@@ -4,6 +4,7 @@ import QRCode from 'qrcode';
 import { decodeQR } from './qrcode-reader';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { decrypt, encrypt } from './crypto';
 
 dotenv.config();
 const realm = 'poc';
@@ -11,6 +12,8 @@ const clientId = 'poc';
 const clientSecret = process.env.CLIENT_SECRET ?? 'invalid-secret';
 const appHost = 'host.docker.internal:3000';
 const keycloakHost = 'host.docker.internal:8080';
+const encryptedSecretKey = process.env.ENCRYPTION_SECRET_KEY ?? 'invalid-secret-key';
+
 const app = express();
 app.use(cors());
 
@@ -64,14 +67,17 @@ app.post('/create-qr-code', async (req, res) => {
   if (!token) {
     throw new Error('Bearer token not found in the request headers');
   }
-  const queryParameters = new URLSearchParams({ token });
+  const encryptedToken = encrypt(token, encryptedSecretKey);
+  const queryParameters = new URLSearchParams({ token: encryptedToken });
   const url = `http://${appHost}/pre-action?${queryParameters.toString()}`;
-  
-  // const qrCode = await QRCode.toString(token, { type: 'terminal', small: true });
-  const qrCode = await QRCode.toDataURL(url);
+  const qrCode = await QRCode.toDataURL(url, { errorCorrectionLevel: 'L' });
 
   try {
-    await QRCode.toFile('./output/qr-code.png', url);
+    await QRCode.toFile(
+      './output/qr-code.png',
+      url,
+      { errorCorrectionLevel: 'L' }
+    );
     console.log('QR code saved to ./output/qr-code.png');
   } catch (err) {
     console.error('Error generating QR code: ', err);
@@ -91,11 +97,12 @@ app.get('/scan-qr-code', async (req, res) => {
 
 app.get('/pre-action', async (req, res) => {
   const { token } = req.query as { token: string };
-  console.log(`Pre-action token: ${token?.substring(0, 100)}...`);
+  const decryptedToken = decrypt(token, encryptedSecretKey);
+  console.log(`Pre-action token: ${decryptedToken?.substring(0, 100)}...`);
 
   // instropect token
   const bodyParams = new URLSearchParams({
-    token,
+    token: decryptedToken,
     client_id: clientId,
     client_secret: clientSecret,
   });
