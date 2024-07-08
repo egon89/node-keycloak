@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec tsx ./authorization-code-flow/src/index.ts",
-    "poc": "nodemon --exec tsx ./authorization-code-flow/src/poc.ts"
+    "auth-code-flow": "nodemon --exec tsx ./authorization-code-flow/src/index.ts"
   },
   "workspaces": [],
   "keywords": [],

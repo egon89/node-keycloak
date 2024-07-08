@@ -1,0 +1,20 @@
+@clientId=poc
+@clientSecret=SukMA6UgY7boEncAoe55C1eMNBcuvzqJ
+
+### device auth
+POST http://host.docker.internal:8080/realms/poc/protocol/openid-connect/auth/device
+Content-Type: application/x-www-form-urlencoded
+
+&client_id={{clientId}}
+&client_secret={{clientSecret}}
+
+
+### get token after verification is done in a browser
+POST http://host.docker.internal:8080/realms/poc/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+&client_id={{clientId}}
+&client_secret={{clientSecret}}
+&device_code=jm-k2R1TW3UDfjeYAaSBu1_dbjIRDBFh71QHAyUGcIs
+&grant_type=urn:ietf:params:oauth:grant-type:device_code
+
