@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "auth-code-flow": "nodemon --exec tsx ./authorization-code-flow/src/index.ts"
+    "auth-code-flow": "nodemon --exec tsx ./authorization-code-flow/src/index.ts",
+    "silent-auth": "nodemon --exec tsx ./silent-authentication/src/index.ts"
   },
   "workspaces": [],
   "keywords": [],

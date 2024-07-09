@@ -1,0 +1,11 @@
+@clientId=poc
+
+### https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+POST http://host.docker.internal:8080/realms/poc/protocol/openid-connect/auth
+Content-Type: application/x-www-form-urlencoded
+
+&client_id={{clientId}}
+&redirect_uri=http://localhost:3000/hello
+&response_type=code
+&id_token_hint=x
+&prompt=none
