@@ -1,5 +1,5 @@
 @clientId=poc
-@clientSecret=SukMA6UgY7boEncAoe55C1eMNBcuvzqJ
+@clientSecret=
 
 ### device auth
 POST http://host.docker.internal:8080/realms/poc/protocol/openid-connect/auth/device
