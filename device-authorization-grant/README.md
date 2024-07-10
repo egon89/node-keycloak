@@ -1,45 +1,85 @@
 # Device Authorization Grant
+### Client configurations
+![](./docs/client-capability-config.png)
 
-1. User logs in the web application
-2. User goes to the biometric start page
-3. The web application requests the device authorization grant
+- To prevent the user consent action, the client scopes must be configured as optional:
+
+![](./docs/client-scopes.png)
+
+
+### desktop
+```mermaid
+sequenceDiagram
+    actor user
+    participant web
+    participant keycloak
+    participant service_0
+
+    user->>web: input credentials
+    web->>keycloak: login
+    keycloak-->>web: keycloak session created<br />access and refresh tokens returned
+    user->>web: go to biometric page
+    web->>keycloak: request device authorization grant (1)
+    keycloak-->>web: device_code, user_code, verification_uri<br /> and verification_uri_complete returned
+    web->>service_0: store device_code, user_code, user_id, check_at<br />and other information
+    web->>keycloak: verification_uri_complete requested (2)
+    keycloak-->>keycloak: check if user has session
+    keycloak-->>web: device authorization granted
+    web->>user: show QR Code with<br />target URL with device_code<br />as query parameter
+    web->>user: show the user_code to the user
+```
+---
+### device
+```mermaid
+sequenceDiagram
+    actor user
+    participant web
+    participant service_0
+    participant keycloak
+
+    user->>web: read QR Code<br />to get the device_code
+    web->>user: ask for user_code (shown in the web)
+    user->>web: input user_code
+    web->>service_0: check user_code and<br />device_code association
+    web->>keycloak: request access_token<br />with device_code (3)
+    keycloak-->>web: access_token, refresh_token<br />and other information returned
+```
+---
+1. Device authorization grant request
     ```shell
     curl --request POST \
-        --url http://host.docker.internal:8080/realms/poc/protocol/openid-connect/auth/device \
+        --url http://host.docker.internal:8080/realms/device-auth/protocol/openid-connect/auth/device \
         --header 'content-type: application/x-www-form-urlencoded' \
         --data = \
-        --data client_id=poc \
-        --data client_secret=SukMA6UgY7boEncAoe55C1eMNBcuvzqJ
+        --data client_id=device-auth
     ```
 
     ```json
     {
         "device_code": "jm-k2R1TW3UDfjeYAaSBu1_dbjIRDBFh71QHAyUGcIs",
         "user_code": "YOJG-BDNT",
-        "verification_uri": "http://host.docker.internal:8080/realms/poc/device",
-        "verification_uri_complete": "http://host.docker.internal:8080/realms/poc/device?user_code=YOJG-BDNT",
+        "verification_uri": "http://host.docker.internal:8080/realms/device-auth/device",
+        "verification_uri_complete": "http://host.docker.internal:8080/realms/device-auth/device?user_code=YOJG-BDNT",
         "expires_in": 600,
         "interval": 5
     }
     ```
-4. The web application requests the `verification_uri_complete` in another tab or modal. **The user will be asked to grant access for this action**
 
-    <img src="./docs/grant_access_1.png" width="350px">
-    <img src="./docs/grant_access_2.png" width="350px">
-    
+2. The verification_uri_complete returns the device login successful content if the user has an active session:
 
-5. The web application shows the QR Code with the target URL and the device_code as a query parameter
-    
-    `http://target.com/biometric?device_code=jm-k2R1TW3UDfjeYAaSBu1_dbjIRDBFh71QHAyUGcIs`
+    `http://host.docker.internal:8080/realms/device-auth/device?user_code=YOJG-BDNT`
 
-6. The device requests the access_token
+    <img src="./docs/device-login-success.png" width="350px">
+
+    If the user does not have an active session, the verification_uri_complete returns the login page (status code 200)
+
+3. Token request
     ```shell
     curl --request POST \
-        --url http://host.docker.internal:8080/realms/poc/protocol/openid-connect/token \
+        --url http://host.docker.internal:8080/realms/device-auth/protocol/openid-connect/token \
         --header 'content-type: application/x-www-form-urlencoded' \
         --data = \
-        --data client_id=poc \
-        --data client_secret=SukMA6UgY7boEncAoe55C1eMNBcuvzqJ \
+        --data client_id=device-auth \
         --data device_code=jm-k2R1TW3UDfjeYAaSBu1_dbjIRDBFh71QHAyUGcIs \
         --data grant_type=urn:ietf:params:oauth:grant-type:device_code
     ```
