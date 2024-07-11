@@ -28,7 +28,6 @@ sequenceDiagram
     
 ```
 ---
-
 ## Flow - Refresh token and user code
 ### desktop
 ```mermaid
